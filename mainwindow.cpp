@@ -738,7 +738,7 @@ void MainWindow::toggleIqPlayback(bool play, const QString filename)
 {
     if (play) {
         /* starting playback */
-        if (rx->start_iq_playback(filename.toStdString(), 96000.0)) {
+        if (rx->start_iq_playback(filename.toStdString(), 2048000.0)) {
             ui->statusBar->showMessage(tr("Error trying to play %1").arg(filename));
         }
         else {

@@ -90,8 +90,8 @@ CPlotter::CPlotter(QWidget *parent) :
     m_FilterBoxEnabled = true;
     m_CenterLineEnabled = true;
 
-    m_Span = 96000;
-    m_SampleFreq = 96000;
+    m_Span = 2048000;
+    m_SampleFreq = 2048000;
 
     m_HorDivs = 12;
     m_VerDivs = 6;

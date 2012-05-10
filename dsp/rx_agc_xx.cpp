@@ -82,10 +82,8 @@ int rx_agc_cc::work(int noutput_items,
 
     d_agc->ProcessData(noutput_items, &ib[0], &ob[0]);
 
-    for (i = 0; i < noutput_items; i++) {
-        out[i].real() = ob[i].re;
-        out[i].imag() = ob[i].im;
-    }
+    for (i = 0; i < noutput_items; i++)
+	out[i] = gr_complex( ob[i].re,  ob[i].im);
 
     return noutput_items;
 }

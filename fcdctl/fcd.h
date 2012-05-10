@@ -34,7 +34,7 @@
 
 #ifdef _WIN32
 #define FCD_API_EXPORT __declspec(dllexport)
-#define FCD_API_CALL  _stdcall
+#define FCD_API_CALL//  _stdcall
 #else
 #define FCD_API_EXPORT
 #define FCD_API_CALL

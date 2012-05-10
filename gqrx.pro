@@ -137,7 +137,7 @@ FORMS += \
 # FIXME: check for version?
 unix {
     CONFIG += link_pkgconfig
-    PKGCONFIG += gnuradio-core gnuradio-audio
+    PKGCONFIG += gnuradio-core gnuradio-audio gnuradio-osmosdr
     PKGCONFIG += libpulse libpulse-simple
     PKGCONFIG += libusb-1.0
 }

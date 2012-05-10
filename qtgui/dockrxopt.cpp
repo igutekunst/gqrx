@@ -29,8 +29,8 @@ DockRxOpt::DockRxOpt(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    /** FIXME: BW should be parameter */
-    ui->filterFreq->Setup(7, -45000, 45000, 1, UNITS_KHZ);
+    /** FIXME: BW should be parameter TODO RTLSDR */
+    ui->filterFreq->Setup(7, -1000000, 1000000, 1, UNITS_KHZ);
     ui->filterFreq->SetFrequency(0);
 
     /* demodulator options dialog */

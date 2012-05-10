@@ -35,20 +35,16 @@ rx_source_fcd::rx_source_fcd(const std::string device_name)
       d_freq_corr(-12), // S/N 820 or greater
       d_gain(20.0)
 {
-    d_audio_src = make_pa_source(device_name, 96000, 2, "GQRX", "I/Q input");
+    d_osmo_src = osmosdr_make_source_c("");
     /** TODO: check error */
 
-    d_f2c = gr_make_float_to_complex(1);
-
     // populate supported sample rates
-    d_sample_rates.push_back(96000.0);
+    d_sample_rates.push_back(2048000.0);
 
-    connect(d_audio_src, 0, d_f2c, 0);
-    connect(d_audio_src, 1, d_f2c, 1);
-    connect(d_f2c, 0, self(), 0);
+    connect(d_osmo_src, 0, self(), 0);
 
-    set_freq(144.5e6f);
-    set_gain(20.0f);
+    /* set_freq(144.5e6f);
+    set_gain(20.0f); */
 }
 
 
@@ -60,11 +56,7 @@ rx_source_fcd::~rx_source_fcd()
 
 void rx_source_fcd::select_device(const std::string device_name)
 {
-    d_audio_src->select_device(device_name);
-
-    /** FIXME **/
-    //d_fcd_src->set_freq((float) d_freq);
-    //d_fcd_src->set_lna_gain((float) d_gain);
+	/** DELETEME **/
 }
 
 void rx_source_fcd::set_freq(double freq)
@@ -75,9 +67,7 @@ void rx_source_fcd::set_freq(double freq)
     if ((freq >= get_freq_min()) && (freq <= get_freq_max()))
     {
         d_freq = freq;
-
-        f *= 1.0 + d_freq_corr/1000000.0;
-        fme = fcdAppSetFreq((int)f);
+    d_osmo_src->set_center_freq((float) d_freq); //TODO check if thi worked
 
         if (fme != FCD_MODE_APP)
         {
@@ -142,7 +132,8 @@ void rx_source_fcd::set_gain(double gain)
         else
             g = 0;               // -5.0 dB
 
-        fme = fcdAppSetParam(FCD_CMD_APP_SET_LNA_GAIN, &g, 1);
+	// TODO set auto gain / set manual gain
+        //fme = fcdAppSetParam(FCD_CMD_APP_SET_LNA_GAIN, &g, 1);
         if (fme != FCD_MODE_APP)
         {
             /** FIUXME: error message **/
@@ -172,7 +163,7 @@ void rx_source_fcd::set_sample_rate(double sps)
 
 double rx_source_fcd::get_sample_rate()
 {
-    return 96000.0;
+    return 2048000.0;
 }
 
 std::vector<double> rx_source_fcd::get_sample_rates()
@@ -215,7 +206,7 @@ void rx_source_fcd::set_iq_corr(double _gain, double _phase)
     iqinfo.phase = static_cast<signed short>(_phase*32768.0);
     iqinfo.gain = static_cast<signed short>(_gain*32768.0);
 
-    fme = fcdAppSetParam(FCD_CMD_APP_SET_IQ_CORR, iqinfo.auc, 4);
+    //fme = fcdAppSetParam(FCD_CMD_APP_SET_IQ_CORR, iqinfo.auc, 4);
     if (fme != FCD_MODE_APP)
     {
         /** FIUXME: error message **/

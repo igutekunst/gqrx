@@ -23,7 +23,7 @@
 #include <gr_hier_block2.h>
 #include <gr_float_to_complex.h>
 #include <dsp/rx_source_base.h>
-#include <pulseaudio/pa_source.h>
+#include <osmosdr/osmosdr_source_c.h>
 
 
 class rx_source_fcd;
@@ -74,7 +74,7 @@ public:
     void set_iq_corr(double gain, double phase);
 
 private:
-    pa_source_sptr           d_audio_src;     /*! Pulseaudio source. */
+    osmosdr_source_c_sptr    d_osmo_src;     /*! OsmoSDR source. */
     gr_float_to_complex_sptr d_f2c;           /*! Block to MUX audio L/R into complex I/Q. */
     std::vector<double>      d_sample_rates;  /*! Supported sample rates. */
     double                   d_freq;          /*! Current RF frequency. */

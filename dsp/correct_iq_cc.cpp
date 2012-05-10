@@ -91,10 +91,7 @@ int dc_corr_cc::work(int noutput_items,
 #endif
 
     for (i = 0; i < noutput_items; i++)
-    {
-        out[i].imag() = in[i].imag() - d_avg_q;
-        out[i].real() = in[i].real() - d_avg_i;
-    }
+	out[i] = gr_complex(in[i].real() - d_avg_i, in[i].imag() - d_avg_q);
 
     return noutput_items;
 }

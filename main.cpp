@@ -63,7 +63,7 @@ int main(int argc, char *argv[])
         }
     }
     */
-
+/*
     QString indev = CIoConfig::getFcdDeviceName();
     if (indev.isEmpty())
     {
@@ -76,7 +76,7 @@ int main(int argc, char *argv[])
 
         return 0;
     }
-
+*/
     // We should now have at least an input device configured
     // and MainWindow will pick that up.
     MainWindow w;

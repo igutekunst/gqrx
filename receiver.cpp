@@ -49,7 +49,7 @@
  * \todo Option to use UHD device instead of FCD.
  */
 receiver::receiver(const std::string input_device, const std::string audio_device)
-    : d_bandwidth(96000.0), d_audio_rate(48000),
+    : d_bandwidth(2048000.0), d_audio_rate(48000),
       d_rf_freq(144800000.0), d_filter_offset(0.0),
       d_demod(DEMOD_FM),
       d_recording_iq(false),
@@ -66,8 +66,8 @@ receiver::receiver(const std::string input_device, const std::string audio_devic
     iq_fft = make_rx_fft_c(4096, 0);
 
     /* dummy I/Q recorder */
-    iq_sink = gr_make_file_sink(sizeof(gr_complex), "/tmp/gqrx.bin");
-    iq_sink->close();
+    //iq_sink = gr_make_file_sink(sizeof(gr_complex), "/tmp/gqrx.bin");
+    //iq_sink->close();
 
     nb = make_rx_nb_cc(d_bandwidth, 3.3, 2.5);
     filter = make_rx_filter(d_bandwidth, d_filter_offset, -5000.0, 5000.0, 1000.0);
@@ -88,20 +88,24 @@ receiver::receiver(const std::string input_device, const std::string audio_devic
     sniffer = make_sniffer_f();
     /* sniffer_rr is created at each activation. */
 
-    tb->connect(src, 0, iq_sink, 0);
+    //tb->connect(src, 0, iq_sink, 0);
     tb->connect(src, 0, nb, 0);
     tb->connect(nb, 0, dc_corr, 0);
     tb->connect(dc_corr, 0, iq_fft, 0);
     tb->connect(dc_corr, 0, filter, 0);
 
     tb->connect(filter, 0, meter, 0);
-    tb->connect(filter, 0, sql, 0);
-    tb->connect(sql, 0, agc, 0);
-    tb->connect(agc, 0, demod_fm, 0);
+    //tb->connect(filter, 0, sql, 0);
+    //tb->connect(sql, 0, agc, 0);
+    tb->connect(filter,0,demod_fm,0);
+    //tb->connect(agc, 0, demod_fm, 0);
     tb->connect(demod_fm, 0, audio_rr, 0);
     tb->connect(audio_rr, 0, audio_fft, 0);
-    tb->connect(audio_rr, 0, audio_gain, 0);
-    tb->connect(audio_gain, 0, audio_snk, 0);
+    //tb->connect(audio_rr, 0, audio_gain, 0);
+    //tb->connect(audio_gain, 0, audio_snk, 0);
+    tb->connect(audio_rr,0,audio_snk,0);
+
+    //tb->connect(src, 0, iq_fft, 0);
 }
 
 
