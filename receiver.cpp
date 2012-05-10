@@ -63,7 +63,7 @@ receiver::receiver(const std::string input_device, const std::string audio_devic
     iq_fft = make_rx_fft_c(4096, 0);
 
     /** TODO decimation is still wrong */
-    const std::vector<gr_complex> taps = gr_firdes::complex_band_pass(1,1920000,-96000,96000,45000,gr_firdes::WIN_HAMMING,6.76);
+    const std::vector<gr_complex> taps = gr_firdes::complex_band_pass(1,1920000,-50000,50000,25000,gr_firdes::WIN_HAMMING,6.76);
     xlate = gr_make_freq_xlating_fir_filter_ccc(d_bandwidth/d_bandwidth_int, taps, -d_filter_offset, d_bandwidth);
 
     nb = make_rx_nb_cc(d_bandwidth, 3.3, 2.5);
@@ -72,7 +72,7 @@ receiver::receiver(const std::string input_device, const std::string audio_devic
     sql = gr_make_simple_squelch_cc(-150.0, 0.001);
     meter = make_rx_meter_c(DETECTOR_TYPE_RMS);
     demod_ssb = gr_make_complex_to_real(1);
-    demod_fm = make_rx_demod_fm(d_bandwidth_int, d_bandwidth_int, 5000.0, 75.0e-6);
+    demod_fm = make_rx_demod_fm(d_bandwidth_int, d_audio_rate, 5000.0, 75.0e-6);
     demod_am = make_rx_demod_am(d_bandwidth_int, d_bandwidth_int, true);
     audio_rr = make_resampler_ff(d_bandwidth_int, d_audio_rate);
     audio_fft = make_rx_fft_f(3072);
@@ -89,15 +89,16 @@ receiver::receiver(const std::string input_device, const std::string audio_devic
     tb->connect(nb, 0, dc_corr, 0);
     tb->connect(dc_corr, 0, iq_fft, 0);
     tb->connect(dc_corr, 0, xlate, 0);
-    tb->connect(xlate,0,filter,0);
+    tb->connect(xlate, 0, filter, 0);
 
     tb->connect(filter, 0, meter, 0);
     tb->connect(filter, 0, sql, 0);
     tb->connect(sql, 0, agc, 0);
     tb->connect(agc, 0, demod_fm, 0);
-    tb->connect(demod_fm, 0, audio_rr, 0);
-    tb->connect(audio_rr, 0, audio_fft, 0);
-    tb->connect(audio_rr, 0, audio_gain, 0);
+    tb->connect(demod_fm, 0, audio_gain, 0);
+    tb->connect(demod_fm, 0, audio_fft, 0);
+    //tb->connect(audio_rr, 0, audio_fft, 0);
+    //tb->connect(audio_rr, 0, audio_gain, 0);
     tb->connect(audio_gain, 0, audio_snk, 0);
 
 }
