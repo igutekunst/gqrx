@@ -31,6 +31,8 @@
 #include <gr_wavfile_sink.h>
 #include <gr_wavfile_source.h>
 #include <gr_null_sink.h>
+#include <gr_freq_xlating_fir_filter_ccc.h>
+#include <gr_freq_xlating_fir_filter_ccf.h>
 #include "dsp/correct_iq_cc.h"
 #include "dsp/rx_source_fcd.h"
 #include "dsp/rx_noise_blanker_cc.h"
@@ -182,7 +184,7 @@ private:
     rx_fft_c_sptr             iq_fft;     /*!< Baseband FFT block. */
     rx_fft_f_sptr             audio_fft;  /*!< Audio FFT block. */
     rx_nb_cc_sptr             nb;         /*!< Noise blanker. */
-    gr_freq_xlating_fir_filter_ccc_sptr xlate; /*!< Frequency xlating fir filter to sample down to internally used 96kHz. */
+    gr_freq_xlating_fir_filter_ccf_sptr xlate; /*!< Frequency xlating fir filter to sample down to internally used 96kHz. */
     rx_filter_sptr            filter;     /*!< Bandpass filter. */
     rx_meter_c_sptr           meter;      /*!< Signal strength. */
     rx_agc_cc_sptr            agc;        /*!< Receiver AGC. */

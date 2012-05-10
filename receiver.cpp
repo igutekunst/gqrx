@@ -63,8 +63,9 @@ receiver::receiver(const std::string input_device, const std::string audio_devic
     iq_fft = make_rx_fft_c(4096, 0);
 
     /** TODO decimation is still wrong */
-    const std::vector<gr_complex> taps = gr_firdes::complex_band_pass(1,1920000,-50000,50000,25000,gr_firdes::WIN_HAMMING,6.76);
-    xlate = gr_make_freq_xlating_fir_filter_ccc(d_bandwidth/d_bandwidth_int, taps, -d_filter_offset, d_bandwidth);
+    //const std::vector<gr_complex> taps = gr_firdes::complex_band_pass(1,1920000,-40000,40000,25000,gr_firdes::WIN_HAMMING,6.76);
+    const std::vector<float> taps = gr_firdes::low_pass(1,1920000,40000,5000,gr_firdes::WIN_HAMMING,6.76);
+    xlate = gr_make_freq_xlating_fir_filter_ccf(d_bandwidth/d_bandwidth_int, taps, -d_filter_offset, d_bandwidth);
 
     nb = make_rx_nb_cc(d_bandwidth, 3.3, 2.5);
     filter = make_rx_filter(d_bandwidth_int, 0, -5000.0, 5000.0, 1000.0);
