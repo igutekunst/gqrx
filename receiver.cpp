@@ -46,7 +46,7 @@
  * \todo Option to use UHD device instead of FCD.
  */
 receiver::receiver(const std::string input_device, const std::string audio_device)
-    : d_bandwidth(2048000.0), d_audio_rate(48000),
+    : d_bandwidth(1920000.0), d_bandwidth_int(96000.0), d_audio_rate(48000),
       d_rf_freq(144800000.0), d_filter_offset(0.0),
       d_demod(DEMOD_FM),
       d_recording_iq(false),
@@ -62,19 +62,19 @@ receiver::receiver(const std::string input_device, const std::string audio_devic
     dc_corr = make_dc_corr_cc(0.01f);
     iq_fft = make_rx_fft_c(4096, 0);
 
-    /* dummy I/Q recorder */
-    //iq_sink = gr_make_file_sink(sizeof(gr_complex), "/tmp/gqrx.bin");
-    //iq_sink->close();
+    /** TODO this is not working properly. also, filter updates don't change anything */
+    const std::vector<gr_complex> taps = gr_firdes::complex_band_pass(1,1920000,-96000,96000,45000,gr_firdes::WIN_HAMMING,6.76);
+    xlate = gr_make_freq_xlating_fir_filter_ccc(d_bandwidth/d_bandwidth_int, taps, d_filter_offset, d_bandwidth);
 
     nb = make_rx_nb_cc(d_bandwidth, 3.3, 2.5);
-    filter = make_rx_filter(d_bandwidth, d_filter_offset, -5000.0, 5000.0, 1000.0);
-    agc = make_rx_agc_cc(d_bandwidth, true, -100, 0, 2, 100, false);
+    filter = make_rx_filter(d_bandwidth_int, 0, -5000.0, 5000.0, 1000.0);
+    agc = make_rx_agc_cc(d_bandwidth_int, true, -100, 0, 2, 100, false);
     sql = gr_make_simple_squelch_cc(-150.0, 0.001);
     meter = make_rx_meter_c(DETECTOR_TYPE_RMS);
     demod_ssb = gr_make_complex_to_real(1);
-    demod_fm = make_rx_demod_fm(d_bandwidth, d_bandwidth, 5000.0, 75.0e-6);
-    demod_am = make_rx_demod_am(d_bandwidth, d_bandwidth, true);
-    audio_rr = make_resampler_ff(d_bandwidth, d_audio_rate);
+    demod_fm = make_rx_demod_fm(d_bandwidth_int, d_bandwidth_int, 5000.0, 75.0e-6);
+    demod_am = make_rx_demod_am(d_bandwidth_int, d_bandwidth_int, true);
+    audio_rr = make_resampler_ff(d_bandwidth_int, d_audio_rate);
     audio_fft = make_rx_fft_f(3072);
     audio_gain = gr_make_multiply_const_ff(0.1);
 
@@ -85,24 +85,21 @@ receiver::receiver(const std::string input_device, const std::string audio_devic
     sniffer = make_sniffer_f();
     /* sniffer_rr is created at each activation. */
 
-    //tb->connect(src, 0, iq_sink, 0);
     tb->connect(src, 0, nb, 0);
     tb->connect(nb, 0, dc_corr, 0);
     tb->connect(dc_corr, 0, iq_fft, 0);
-    tb->connect(dc_corr, 0, filter, 0);
+    tb->connect(dc_corr, 0, xlate, 0);
+    tb->connect(xlate,0,filter,0);
 
     tb->connect(filter, 0, meter, 0);
-    //tb->connect(filter, 0, sql, 0);
-    //tb->connect(sql, 0, agc, 0);
-    tb->connect(filter,0,demod_fm,0);
-    //tb->connect(agc, 0, demod_fm, 0);
+    tb->connect(filter, 0, sql, 0);
+    tb->connect(sql, 0, agc, 0);
+    tb->connect(agc, 0, demod_fm, 0);
     tb->connect(demod_fm, 0, audio_rr, 0);
     tb->connect(audio_rr, 0, audio_fft, 0);
-    //tb->connect(audio_rr, 0, audio_gain, 0);
-    //tb->connect(audio_gain, 0, audio_snk, 0);
-    tb->connect(audio_rr,0,audio_snk,0);
+    tb->connect(audio_rr, 0, audio_gain, 0);
+    tb->connect(audio_gain, 0, audio_snk, 0);
 
-    //tb->connect(src, 0, iq_fft, 0);
 }
 
 

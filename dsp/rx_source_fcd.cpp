@@ -39,7 +39,7 @@ rx_source_fcd::rx_source_fcd(const std::string device_name)
     /** TODO: check error */
 
     // populate supported sample rates
-    d_sample_rates.push_back(2048000.0);
+    d_sample_rates.push_back(1920000.0);
 
     connect(d_osmo_src, 0, self(), 0);
 
@@ -163,7 +163,7 @@ void rx_source_fcd::set_sample_rate(double sps)
 
 double rx_source_fcd::get_sample_rate()
 {
-    return 2048000.0;
+    return 1920000.0;
 }
 
 std::vector<double> rx_source_fcd::get_sample_rates()

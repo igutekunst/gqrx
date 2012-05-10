@@ -37,7 +37,7 @@ typedef boost::shared_ptr<rx_nb_cc> rx_nb_cc_sptr;
  * To avoid accidental use of raw pointers, the rx_nb_cc constructor is private.
  * make_rx_nb_cc is the public interface for creating new instances.
  */
-rx_nb_cc_sptr make_rx_nb_cc(double sample_rate=2048000.0, float thld1=3.3, float thld2=2.5);
+rx_nb_cc_sptr make_rx_nb_cc(double sample_rate=1920000.0, float thld1=3.3, float thld2=2.5);
 
 
 /*! \brief Noise blanker block.

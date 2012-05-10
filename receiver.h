@@ -163,6 +163,7 @@ public:
 private:
     bool   d_running;          /*!< Whether receiver is running or not. */
     float  d_bandwidth;        /*!< Receiver bandwidth. */
+    float  d_bandwidth_int;    /*!< Internal bandwidth due to fcd and hardcoded values. FIXME */
     int    d_audio_rate;       /*!< Audio output rate. */
     double d_rf_freq;          /*!< Current RF frequency. */
     double d_filter_offset;    /*!< Current filter offset (tune within passband). */
@@ -181,6 +182,7 @@ private:
     rx_fft_c_sptr             iq_fft;     /*!< Baseband FFT block. */
     rx_fft_f_sptr             audio_fft;  /*!< Audio FFT block. */
     rx_nb_cc_sptr             nb;         /*!< Noise blanker. */
+    gr_freq_xlating_fir_filter_ccc_sptr xlate; /*!< Frequency xlating fir filter to sample down to internally used 96kHz. */
     rx_filter_sptr            filter;     /*!< Bandpass filter. */
     rx_meter_c_sptr           meter;      /*!< Signal strength. */
     rx_agc_cc_sptr            agc;        /*!< Receiver AGC. */

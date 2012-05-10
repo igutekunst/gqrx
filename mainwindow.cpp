@@ -54,7 +54,7 @@ MainWindow::MainWindow(QWidget *parent) :
     QString indev = CIoConfig::getFcdDeviceName();
     //QString outdev = settings.value("output").toString();
 
-    rx = new receiver(indev.toStdString(), "");
+    rx = new receiver(indev.toStdString(), "pulse");
     rx->set_rf_freq(144500000.0f);
 
     /* meter timer */
@@ -738,7 +738,7 @@ void MainWindow::toggleIqPlayback(bool play, const QString filename)
 {
     if (play) {
         /* starting playback */
-        if (rx->start_iq_playback(filename.toStdString(), 2048000.0)) {
+        if (rx->start_iq_playback(filename.toStdString(), 1920000.0)) {
             ui->statusBar->showMessage(tr("Error trying to play %1").arg(filename));
         }
         else {
