@@ -54,7 +54,7 @@ MainWindow::MainWindow(QWidget *parent) :
     QString indev = CIoConfig::getFcdDeviceName();
     //QString outdev = settings.value("output").toString();
 
-    rx = new receiver(indev.toStdString(), "pulse");
+    rx = new receiver(indev.toStdString(), "");
     rx->set_rf_freq(144500000.0f);
 
     /* meter timer */

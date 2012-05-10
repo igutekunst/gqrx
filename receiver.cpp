@@ -62,9 +62,9 @@ receiver::receiver(const std::string input_device, const std::string audio_devic
     dc_corr = make_dc_corr_cc(0.01f);
     iq_fft = make_rx_fft_c(4096, 0);
 
-    /** TODO this is not working properly. also, filter updates don't change anything */
+    /** TODO decimation is still wrong */
     const std::vector<gr_complex> taps = gr_firdes::complex_band_pass(1,1920000,-96000,96000,45000,gr_firdes::WIN_HAMMING,6.76);
-    xlate = gr_make_freq_xlating_fir_filter_ccc(d_bandwidth/d_bandwidth_int, taps, d_filter_offset, d_bandwidth);
+    xlate = gr_make_freq_xlating_fir_filter_ccc(d_bandwidth/d_bandwidth_int, taps, -d_filter_offset, d_bandwidth);
 
     nb = make_rx_nb_cc(d_bandwidth, 3.3, 2.5);
     filter = make_rx_filter(d_bandwidth_int, 0, -5000.0, 5000.0, 1000.0);
@@ -217,7 +217,8 @@ receiver::status receiver::set_rf_gain(float gain_db)
 receiver::status receiver::set_filter_offset(double offset_hz)
 {
     d_filter_offset = offset_hz;
-    filter->set_offset(d_filter_offset);
+    //filter->set_offset(d_filter_offset);
+    xlate->set_center_freq(-d_filter_offset);
     return STATUS_OK;
 }
 
