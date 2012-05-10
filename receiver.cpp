@@ -21,7 +21,7 @@
 #include <cmath>
 
 #include <gr_top_block.h>
-//#include <gr_audio_sink.h>
+#include <gr_audio_sink.h>
 #include <gr_complex_to_xxx.h>
 #include <gr_multiply_const_ff.h>
 #include <gr_simple_squelch_cc.h>
@@ -36,9 +36,6 @@
 #include "dsp/rx_fft.h"
 #include "dsp/rx_agc_xx.h"
 
-//#include <gr_float_to_complex.h>
-#include <pulseaudio/pa_sink.h>
-//#include <pulseaudio/pa_source.h>
 
 
 /*! \brief Public contructor.
@@ -81,7 +78,7 @@ receiver::receiver(const std::string input_device, const std::string audio_devic
     audio_fft = make_rx_fft_f(3072);
     audio_gain = gr_make_multiply_const_ff(0.1);
 
-    audio_snk = make_pa_sink(audio_device, d_audio_rate, "GQRX", "Audio output");
+    audio_snk = audio_make_sink(d_audio_rate, audio_device, true);
 
     /* wav sink and source is created when rec/play is started */
     audio_null_sink = gr_make_null_sink(sizeof(float));
@@ -161,7 +158,7 @@ void receiver::set_output_device(const std::string device)
 
     tb->disconnect(audio_gain, 0, audio_snk, 0);
     audio_snk.reset();
-    audio_snk = make_pa_sink(device, d_audio_rate); // FIXME: does this keep app and stream name?
+    audio_snk = audio_make_sink(d_audio_rate, device, true);
     tb->connect(audio_gain, 0, audio_snk, 0);
 
     tb->unlock();

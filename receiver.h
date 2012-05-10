@@ -21,7 +21,7 @@
 #define RECEIVER_H
 
 #include <gr_top_block.h>
-//#include <gr_audio_sink.h>
+#include <gr_audio_sink.h>
 #include <gr_complex_to_xxx.h>
 #include <gr_multiply_const_ff.h>
 #include <gr_simple_squelch_cc.h>
@@ -43,8 +43,6 @@
 #include "dsp/resampler_ff.h"
 #include "dsp/sniffer_f.h"
 
-#include <pulseaudio/pa_sink.h>
-#include <pulseaudio/pa_source.h>
 
 
 /*! \defgroup DSP Digital signal processing library based on GNU Radio */
@@ -202,7 +200,7 @@ private:
     sniffer_f_sptr            sniffer;    /*!< Sample sniffer for data decoders. */
     resampler_ff_sptr         sniffer_rr; /*!< Sniffer resampler. */
 
-    pa_sink_sptr              audio_snk;  /*!< Audio sink. */
+    audio_sink::sptr              audio_snk;  /*!< Audio sink. */
 
 protected:
 
