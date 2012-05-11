@@ -31,25 +31,27 @@ rx_source_osmosdr_sptr make_rx_source_osmosdr(const std::string device_name)
 
 rx_source_osmosdr::rx_source_osmosdr(const std::string device_name)
     : rx_source_base("rx_source_osmosdr"),
-      d_freq(144.5e6),
-      d_gain(20.0)
+      d_freq(144.5e6), // TODO maybe not hardcode this
+      d_gain(20.0),
+      d_sample_rate(1920000.0)
 {
     d_osmosdr_src = osmosdr_make_source_c("");
     /** TODO: check error */
 
     // populate supported sample rates
-    d_sample_rates.push_back(1920000.0);
+    d_sample_rates.push_back(d_sample_rate);
 
     connect(d_osmosdr_src, 0, self(), 0);
 
-    /* set_freq(144.5e6f);
-    set_gain(20.0f); */
+    // setting initial frequency and sample rate
+    set_freq(d_freq);
+    set_sample_rate(d_sample_rate);
 }
 
 
 rx_source_osmosdr::~rx_source_osmosdr()
 {
-
+    /** TODO nothing to do here? */
 }
 
 
@@ -73,7 +75,7 @@ void rx_source_osmosdr::set_freq(double freq)
 
 double rx_source_osmosdr::get_freq()
 {
-    return d_freq;
+    return d_osmosdr_src->get_center_freq();
 }
 
 double rx_source_osmosdr::get_freq_min()
@@ -92,43 +94,14 @@ void rx_source_osmosdr::set_gain(double gain)
 
     if ((gain >= get_gain_min()) && (gain <= get_gain_max()))
     {
-        d_gain = gain;
-
-        /* convert gain to nearest discrete value */
-        if (gain > 27.5)
-            g = 14;              // 30.0 dB
-        else if (gain > 22.5)
-            g = 13;              // 25.0 dB
-        else if (gain > 18.75)
-            g = 12;              // 20.0 dB
-        else if (gain > 16.25)
-            g = 11;              // 17.5 dB
-        else if (gain > 13.75)
-            g = 10;              // 15.0 dB
-        else if (gain > 11.25)
-            g = 9;               // 12.5 dB
-        else if (gain > 8.75)
-            g = 8;               // 10.0 dB
-        else if (gain > 6.25)
-            g = 7;               // 7.5 dB
-        else if (gain > 3.75)
-            g = 6;               // 5.0 dB
-        else if (gain > 1.25)
-            g = 5;               // 2.5 dB
-        else if (gain > -1.25)
-            g = 4;               // 0.0 dB
-        else if (gain > -3.75)
-            g = 1;               // -2.5 dB
-        else
-            g = 0;               // -5.0 dB
-
+        std::cout << "set_gain called" << std::endl;
 	// TODO set auto gain / set manual gain
     }
 }
 
 double rx_source_osmosdr::get_gain()
 {
-    return d_gain;
+    return d_osmosdr_src->get_gain();
 }
 
 double rx_source_osmosdr::get_gain_min()
@@ -143,13 +116,12 @@ double rx_source_osmosdr::get_gain_max()
 
 void rx_source_osmosdr::set_sample_rate(double sps)
 {
-    /** TODO rtl has more than one possible sample rate... */
-    // nothing to do;
+    d_osmosdr_src->set_sample_rate(sps);
 }
 
 double rx_source_osmosdr::get_sample_rate()
 {
-    return 1920000.0;
+    return d_osmosdr_src->get_sample_rate();
 }
 
 std::vector<double> rx_source_osmosdr::get_sample_rates()

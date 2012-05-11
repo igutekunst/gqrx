@@ -1,6 +1,7 @@
 /* -*- c++ -*- */
 /*
  * Copyright 2011 Alexandru Csete OZ9AEC.
+ * Copyright 2012 Mathis Schmieder <mathis.schmieder@googlemail.com>
  *
  * Gqrx is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -204,7 +205,7 @@ private:
     sniffer_f_sptr            sniffer;    /*!< Sample sniffer for data decoders. */
     resampler_ff_sptr         sniffer_rr; /*!< Sniffer resampler. */
 
-    audio_sink::sptr              audio_snk;  /*!< Audio sink. */
+    audio_sink::sptr          audio_snk;  /*!< Audio sink. */
 
 protected:
 

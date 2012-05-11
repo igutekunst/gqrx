@@ -73,6 +73,7 @@ private:
     std::vector<double>      d_sample_rates;  /*! Supported sample rates. */
     double                   d_freq;          /*! Current RF frequency. */
     double                   d_gain;          /*! Current RF gain. */
+    double                   d_sample_rate;   /*! Current sample rate. */
 };
 
 #endif // RX_SOURCE_OSMOSDR_H
