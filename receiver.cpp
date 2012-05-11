@@ -58,7 +58,6 @@ receiver::receiver(const std::string input_device, const std::string audio_devic
     tb = gr_make_top_block("gqrx");
 
     src = make_rx_source_osmosdr(input_device);
-    //src->set_freq(d_rf_freq);
 
     dc_corr = make_dc_corr_cc(0.01f);
     iq_fft = make_rx_fft_c(4096, 0);
@@ -68,8 +67,8 @@ receiver::receiver(const std::string input_device, const std::string audio_devic
     xlate = gr_make_freq_xlating_fir_filter_ccf(d_bandwidth/d_bandwidth_int, taps, -d_filter_offset, d_bandwidth);
 
     nb = make_rx_nb_cc(d_bandwidth, 3.3, 2.5);
-    filter = make_rx_filter(d_bandwidth_int, 0, -5000.0, 5000.0, 1000.0);
-    agc = make_rx_agc_cc(d_bandwidth_int, true, -100, 0, 2, 100, false);
+    filter = make_rx_filter(d_bandwidth_int, 0, -5000.0, 5000.0, 1000.0); // TODO combine this with xlating filter
+    agc = make_rx_agc_cc(d_bandwidth_int, true, -100, 0, 2, 100, false); // TODO is this one necessary?
     sql = gr_make_simple_squelch_cc(-150.0, 0.001);
     meter = make_rx_meter_c(DETECTOR_TYPE_RMS);
     demod_ssb = gr_make_complex_to_real(1);
@@ -81,9 +80,7 @@ receiver::receiver(const std::string input_device, const std::string audio_devic
 
     audio_fft = make_rx_fft_f(3072);
 
-    /** TODO ?!? */
     audio_gain = gr_make_multiply_const_ff(0.1);
-
     audio_snk = audio_make_sink(d_audio_rate, audio_device, true);
 
     /* wav sink and source is created when rec/play is started */
@@ -101,11 +98,12 @@ receiver::receiver(const std::string input_device, const std::string audio_devic
     tb->connect(filter, 0, sql, 0);
     tb->connect(sql, 0, agc, 0);
     tb->connect(agc, 0, demod_fm, 0);
-    tb->connect(demod_fm, 0, audio_null_sink, 0);
+    tb->connect(demod_fm, 0, audio_gain, 0);
     tb->connect(demod_fm, 0, audio_fft, 0);
     //tb->connect(audio_rr, 0, audio_fft, 0);
     //tb->connect(audio_rr, 0, audio_gain, 0);
 
+    tb->connect(audio_gain, 0, audio_null_sink, 0);
     /** TODO all hell breaks lose if we connect the audio sink */
     //tb->connect(audio_gain, 0, audio_snk, 0);
 
@@ -231,7 +229,7 @@ receiver::status receiver::set_filter_offset(double offset_hz)
     return STATUS_OK;
 }
 
-/*! \brief Get filterm offset.
+/*! \brief Get filter offset.
  *  \return The current filter offset.
  *  \sa set_filter_offset()
  */

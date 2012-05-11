@@ -22,7 +22,6 @@
 #include <QFile>
 #include <QStringList>
 #include <QDebug>
-#include "pulseaudio/pa_device_list.h"
 #include "qtgui/ioconfig.h"
 #include "ui_ioconfig.h"
 
@@ -36,7 +35,7 @@ CIoConfig::CIoConfig(QWidget *parent) :
     ui->setupUi(this);
 
     connect(this, SIGNAL(accepted()), this, SLOT(saveConfig()));
-
+/** TODO we do not use pulseaudio anymore
 #ifdef Q_OS_LINUX
     // get list of output devices
     pa_device_list devices;
@@ -55,7 +54,7 @@ CIoConfig::CIoConfig(QWidget *parent) :
     //QString indev = settings.value("input", "").toString();
     //QString outdev = settings.value("output", "").toString();
 #endif
-
+*/
 
 }
 
@@ -73,7 +72,7 @@ CIoConfig::~CIoConfig()
 QString CIoConfig::getFcdDeviceName()
 {
     QString retval("");
-
+/** DELETEME
 #ifdef Q_OS_LINUX
     pa_device_list devices;
     vector<pa_device> devlist = devices.get_input_devices();
@@ -94,7 +93,7 @@ QString CIoConfig::getFcdDeviceName()
 #endif
 
     qDebug() << "  => " << retval;
-
+*/
     return retval;
 }
 

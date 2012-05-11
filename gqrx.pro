@@ -64,11 +64,6 @@ SOURCES += \
     dsp/rx_agc_xx.cpp \
     dsp/agc_impl.cpp \
     dsp/correct_iq_cc.cpp \
-    pulseaudio/pa_device_list.cc \  # FIXME: Linux only
-    pulseaudio/pa_sink.cc \
-    pulseaudio/pa_source.cc \
-    fcdctl/fcd.c \
-    fcdctl/hid-libusb.c \  # FIXME: Linux only
     qtgui/demod-options.cpp \
     dsp/rx_noise_blanker_cc.cpp
 #    fcdctl/hidwin.c \
@@ -109,12 +104,6 @@ HEADERS += \
     dsp/rx_agc_xx.h \
     dsp/agc_impl.h \
     dsp/correct_iq_cc.h \
-    pulseaudio/pa_device_list.h \  # FIXME: Linux only
-    pulseaudio/pa_sink.h \
-    pulseaudio/pa_source.h \
-    fcdctl/hidapi.h \
-    fcdctl/fcdhidcmd.h \
-    fcdctl/fcd.h \
     gqrx.h \
     qtgui/demod-options.h \
     dsp/rx_noise_blanker_cc.h
@@ -138,7 +127,6 @@ FORMS += \
 unix {
     CONFIG += link_pkgconfig
     PKGCONFIG += gnuradio-core gnuradio-audio gnuradio-osmosdr
-    PKGCONFIG += libpulse libpulse-simple
     PKGCONFIG += libusb-1.0
 }
 
