@@ -72,7 +72,7 @@ public:
     void setFreqDigits(int digits) { m_FreqDigits = digits>=0 ? digits : 0; }
 
     /* Determines full bandwidth. */
-    void setSampleRate(double rate) { if (rate > 0.0) m_SampleFreq = rate; }
+    void setSampleRate(double rate) { if (rate > 0.0) { m_Span = rate; m_SampleFreq = rate; } }
 
     void SetFftCenterFreq(qint64 f) { m_FftCenter = f; }
 

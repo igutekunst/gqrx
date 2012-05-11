@@ -196,6 +196,20 @@ double receiver::get_rf_freq()
     return d_rf_freq;
 }
 
+/*! \brief Set RF sample rate.
+ *  \param d_sample_rate The desired sample rate in Hz.
+ *  \return RX_STATUS_ERROR if an error occurs.
+ */
+receiver::status receiver::set_rf_sample_rate(double d_sample_rate)
+{
+    src->set_sample_rate(d_sample_rate);
+    if (src->get_sample_rate() == d_sample_rate)
+        return STATUS_OK;
+    else
+        return STATUS_ERROR;
+}
+
+
 /*! \brief Set RF gain.
  *  \param gain_db The desired gain in dB.
  *  \return RX_STATUS_ERROR if an error occurs, e.g. the gain is out of valid range.

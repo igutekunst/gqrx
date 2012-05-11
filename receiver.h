@@ -99,6 +99,8 @@ public:
     status set_rf_freq(double freq_hz);
     double get_rf_freq();
 
+    status set_rf_sample_rate(double d_sample_rate);
+
     status set_rf_gain(float gain_db);
 
 

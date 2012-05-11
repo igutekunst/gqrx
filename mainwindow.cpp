@@ -40,7 +40,7 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    setWindowTitle(QString("gqrx %1 (Funcube Dongle)").arg(VERSION));
+    setWindowTitle(QString("gqrx %1 (OsmoSDR)").arg(VERSION));
 
     /* frequency control widget */
     ui->freqCtrl->Setup(10, (quint64) 0, (quint64) 9999e6, 1, UNITS_MHZ);
@@ -56,6 +56,8 @@ MainWindow::MainWindow(QWidget *parent) :
 
     rx = new receiver(indev.toStdString(), "");
     rx->set_rf_freq(144500000.0f);
+    rx->set_rf_sample_rate(1920000.0); // TODO variable
+    ui->plotter->setSampleRate(1920000);
 
     /* meter timer */
     meter_timer = new QTimer(this);
