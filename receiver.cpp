@@ -62,8 +62,7 @@ receiver::receiver(const std::string input_device, const std::string audio_devic
     dc_corr = make_dc_corr_cc(0.01f);
     iq_fft = make_rx_fft_c(4096, 0);
 
-    /** TODO decimation is still wrong */
-    //const std::vector<gr_complex> taps = gr_firdes::complex_band_pass(1,1920000,-40000,40000,25000,gr_firdes::WIN_HAMMING,6.76);
+    /** TODO replace fixed internal bandwidth with variable one */
     const std::vector<float> taps = gr_firdes::low_pass(1,1920000,40000,5000,gr_firdes::WIN_HAMMING,6.76);
     xlate = gr_make_freq_xlating_fir_filter_ccf(d_bandwidth/d_bandwidth_int, taps, -d_filter_offset, d_bandwidth);
 
@@ -73,10 +72,15 @@ receiver::receiver(const std::string input_device, const std::string audio_devic
     sql = gr_make_simple_squelch_cc(-150.0, 0.001);
     meter = make_rx_meter_c(DETECTOR_TYPE_RMS);
     demod_ssb = gr_make_complex_to_real(1);
+
+    /** TODO replace these with regular GR blocks */
     demod_fm = make_rx_demod_fm(d_bandwidth_int, d_audio_rate, 5000.0, 75.0e-6);
     demod_am = make_rx_demod_am(d_bandwidth_int, d_bandwidth_int, true);
     audio_rr = make_resampler_ff(d_bandwidth_int, d_audio_rate);
+
     audio_fft = make_rx_fft_f(3072);
+
+    /** TODO ?!? */
     audio_gain = gr_make_multiply_const_ff(0.1);
 
     audio_snk = audio_make_sink(d_audio_rate, audio_device, true);
@@ -96,11 +100,13 @@ receiver::receiver(const std::string input_device, const std::string audio_devic
     tb->connect(filter, 0, sql, 0);
     tb->connect(sql, 0, agc, 0);
     tb->connect(agc, 0, demod_fm, 0);
-    tb->connect(demod_fm, 0, audio_gain, 0);
+    tb->connect(demod_fm, 0, audio_null_sink, 0);
     tb->connect(demod_fm, 0, audio_fft, 0);
     //tb->connect(audio_rr, 0, audio_fft, 0);
     //tb->connect(audio_rr, 0, audio_gain, 0);
-    tb->connect(audio_gain, 0, audio_snk, 0);
+
+    /** TODO all hell breaks lose if we connect the audio sink */
+    //tb->connect(audio_gain, 0, audio_snk, 0);
 
 }
 
