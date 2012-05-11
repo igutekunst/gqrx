@@ -60,7 +60,7 @@ SOURCES += \
     tlm/arissat/scale_psu.c \
     tlm/arissat/scale_ppt.c \
     dsp/rx_source_base.cpp \
-    dsp/rx_source_fcd.cpp \
+    dsp/rx_source_osmosdr.cpp \
     dsp/rx_agc_xx.cpp \
     dsp/agc_impl.cpp \
     dsp/correct_iq_cc.cpp \
@@ -105,7 +105,7 @@ HEADERS += \
     tlm/arissat/scale_psu.h \
     tlm/arissat/scale_ppt.h \
     dsp/rx_source_base.h \
-    dsp/rx_source_fcd.h \
+    dsp/rx_source_osmosdr.h \
     dsp/rx_agc_xx.h \
     dsp/agc_impl.h \
     dsp/correct_iq_cc.h \

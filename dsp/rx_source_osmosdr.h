@@ -1,6 +1,8 @@
 /* -*- c++ -*- */
 /*
  * Copyright 2011-2012 Alexandru Csete OZ9AEC.
+ * Copyright 2012 Hoernchen
+ * Copyright 2012 Mathis Schmieder <mathis.schmieder@googlemail.com>
  *
  * Gqrx is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,8 +19,8 @@
  * the Free Software Foundation, Inc., 51 Franklin Street,
  * Boston, MA 02110-1301, USA.
  */
-#ifndef RX_SOURCE_FCD_H
-#define RX_SOURCE_FCD_H
+#ifndef RX_SOURCE_OSMOSDR_H
+#define RX_SOURCE_OSMOSDR_H
 
 #include <gr_hier_block2.h>
 #include <gr_float_to_complex.h>
@@ -26,34 +28,31 @@
 #include <osmosdr/osmosdr_source_c.h>
 
 
-class rx_source_fcd;
+class rx_source_osmosdr;
 
-/*! \brief Boost shared pointer to rx_source_fcd. */
-typedef boost::shared_ptr<rx_source_fcd> rx_source_fcd_sptr;
+/*! \brief Boost shared pointer to rx_source_osmosdr. */
+typedef boost::shared_ptr<rx_source_osmosdr> rx_source_osmosdr_sptr;
 
-/*! \brief Public constructor of rx_source_fcd. */
-rx_source_fcd_sptr make_rx_source_fcd(const std::string device_name);
+/*! \brief Public constructor of rx_source_osmosdr. */
+rx_source_osmosdr_sptr make_rx_source_osmosdr(const std::string device_name);
 
 
-/*! \brief Wrapper block for Funcube Dongle source.
+/*! \brief Wrapper block for OsmoSDR source.
  *  \ingroup DSP
  *
- * This block provides a wrapper for the FCD source using the
+ * This block provides a wrapper for the OsmoSDR source using the
  * rx_source_base API.
- *
- * Current implementation uses our own pulseaudio source on linux and
- * gr_audio_source on Mac and Windows (future todo).
  *
  * \bug Only supports a single device
  */
-class rx_source_fcd : public rx_source_base
+class rx_source_osmosdr : public rx_source_base
 {
 
 public:
-    rx_source_fcd(const std::string device_name);
-    ~rx_source_fcd();
+    rx_source_osmosdr(const std::string device_name);
+    ~rx_source_osmosdr();
 
-    void select_device(const std::string device_name);
+    void select_device(const std::string device_name); /*! Stub. */
 
     void set_freq(double freq);
     double get_freq();
@@ -69,17 +68,11 @@ public:
     double get_sample_rate();
     std::vector<double> get_sample_rates();
 
-    void set_freq_corr(int ppm);
-    void set_dc_corr(double dci, double dcq);
-    void set_iq_corr(double gain, double phase);
-
 private:
-    osmosdr_source_c_sptr    d_osmo_src;     /*! OsmoSDR source. */
-    gr_float_to_complex_sptr d_f2c;           /*! Block to MUX audio L/R into complex I/Q. */
+    osmosdr_source_c_sptr    d_osmosdr_src;     /*! OsmoSDR source. */
     std::vector<double>      d_sample_rates;  /*! Supported sample rates. */
     double                   d_freq;          /*! Current RF frequency. */
-    int                      d_freq_corr;     /*! Current frequency correction in ppm. */
     double                   d_gain;          /*! Current RF gain. */
 };
 
-#endif // RX_SOURCE_FCD_H
+#endif // RX_SOURCE_OSMOSDR_H

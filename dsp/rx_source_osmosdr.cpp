@@ -1,6 +1,8 @@
 /* -*- c++ -*- */
 /*
  * Copyright 2011-2012 Alexandru Csete OZ9AEC.
+ * Copyright 2012 Hoernchen
+ * Copyright 2012 Mathis Schmieder <mathis.schmieder@googlemail.com>
  *
  * Gqrx is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,86 +20,74 @@
  * Boston, MA 02110-1301, USA.
  */
 #include <iostream>
-#include <fcdctl/fcd.h>
-#include <fcdctl/fcdhidcmd.h>
-#include "rx_source_fcd.h"
+#include "rx_source_osmosdr.h"
 
 
-rx_source_fcd_sptr make_rx_source_fcd(const std::string device_name)
+rx_source_osmosdr_sptr make_rx_source_osmosdr(const std::string device_name)
 {
-    return gnuradio::get_initial_sptr(new rx_source_fcd(device_name));
+    return gnuradio::get_initial_sptr(new rx_source_osmosdr(device_name));
 }
 
 
-rx_source_fcd::rx_source_fcd(const std::string device_name)
-    : rx_source_base("rx_source_fcd"),
+rx_source_osmosdr::rx_source_osmosdr(const std::string device_name)
+    : rx_source_base("rx_source_osmosdr"),
       d_freq(144.5e6),
-      d_freq_corr(-12), // S/N 820 or greater
       d_gain(20.0)
 {
-    d_osmo_src = osmosdr_make_source_c("");
+    d_osmosdr_src = osmosdr_make_source_c("");
     /** TODO: check error */
 
     // populate supported sample rates
     d_sample_rates.push_back(1920000.0);
 
-    connect(d_osmo_src, 0, self(), 0);
+    connect(d_osmosdr_src, 0, self(), 0);
 
     /* set_freq(144.5e6f);
     set_gain(20.0f); */
 }
 
 
-rx_source_fcd::~rx_source_fcd()
+rx_source_osmosdr::~rx_source_osmosdr()
 {
 
 }
 
 
-void rx_source_fcd::select_device(const std::string device_name)
+void rx_source_osmosdr::select_device(const std::string device_name)
 {
-	/** DELETEME **/
+    /** TODO osmo sdr source supports more than one device **/
 }
 
-void rx_source_fcd::set_freq(double freq)
+void rx_source_osmosdr::set_freq(double freq)
 {
-    FCD_MODE_ENUM fme;
-    double f = freq;
-
     if ((freq >= get_freq_min()) && (freq <= get_freq_max()))
     {
         d_freq = freq;
-    d_osmo_src->set_center_freq((float) d_freq); //TODO check if thi worked
-
-        if (fme != FCD_MODE_APP)
-        {
-            /** FIXME: error message **/
-        }
+        d_osmosdr_src->set_center_freq((float) d_freq); //TODO check if this worked
     }
 
 #ifndef QT_NO_DEBUG_OUTPUT
-    std::cout << "FCD source new freq: " << (int) d_freq << " Hz" << std::endl;
+    std::cout << "OsmoSDR source new freq: " << (int) d_freq << " Hz" << std::endl;
 #endif
 }
 
-double rx_source_fcd::get_freq()
+double rx_source_osmosdr::get_freq()
 {
     return d_freq;
 }
 
-double rx_source_fcd::get_freq_min()
+double rx_source_osmosdr::get_freq_min()
 {
     return 50.0e6;
 }
 
-double rx_source_fcd::get_freq_max()
+double rx_source_osmosdr::get_freq_max()
 {
     return 2.0e9;
 }
 
-void rx_source_fcd::set_gain(double gain)
+void rx_source_osmosdr::set_gain(double gain)
 {
-    FCD_MODE_ENUM fme;
     unsigned char g;
 
     if ((gain >= get_gain_min()) && (gain <= get_gain_max()))
@@ -133,82 +123,36 @@ void rx_source_fcd::set_gain(double gain)
             g = 0;               // -5.0 dB
 
 	// TODO set auto gain / set manual gain
-        //fme = fcdAppSetParam(FCD_CMD_APP_SET_LNA_GAIN, &g, 1);
-        if (fme != FCD_MODE_APP)
-        {
-            /** FIUXME: error message **/
-        }
     }
 }
 
-double rx_source_fcd::get_gain()
+double rx_source_osmosdr::get_gain()
 {
     return d_gain;
 }
 
-double rx_source_fcd::get_gain_min()
+double rx_source_osmosdr::get_gain_min()
 {
     return -5.0;
 }
 
-double rx_source_fcd::get_gain_max()
+double rx_source_osmosdr::get_gain_max()
 {
     return 30.0;
 }
 
-void rx_source_fcd::set_sample_rate(double sps)
+void rx_source_osmosdr::set_sample_rate(double sps)
 {
+    /** TODO rtl has more than one possible sample rate... */
     // nothing to do;
 }
 
-double rx_source_fcd::get_sample_rate()
+double rx_source_osmosdr::get_sample_rate()
 {
     return 1920000.0;
 }
 
-std::vector<double> rx_source_fcd::get_sample_rates()
+std::vector<double> rx_source_osmosdr::get_sample_rates()
 {
     return d_sample_rates;
-}
-
-/** FIXME: Remove? */
-void rx_source_fcd::set_freq_corr(int ppm)
-{
-    d_freq_corr = ppm;
-    set_freq(d_freq);
-}
-
-/** FIXME: Remove? */
-void rx_source_fcd::set_dc_corr(double dci, double dcq)
-{
-    //d_fcd_src->set_dc_corr(dci, dcq);
-}
-
-/** FIXME: Remove? */
-void rx_source_fcd::set_iq_corr(double _gain, double _phase)
-{
-    FCD_MODE_ENUM fme;
-    union {
-        unsigned char auc[4];
-        struct {
-            signed short phase;
-            signed short gain;
-        };
-    } iqinfo;
-
-    if ((_gain < -1.0) || (_gain > 1.0) || (_phase < -1.0) || (_phase > 1.0))
-        return;
-
-#ifndef QT_NO_DEBUG_OUTPUT
-    std::cout << "FCD source I/Q corr phase:" << _phase << " gain:" << _gain << std::endl;
-#endif
-
-    iqinfo.phase = static_cast<signed short>(_phase*32768.0);
-    iqinfo.gain = static_cast<signed short>(_gain*32768.0);
-
-    //fme = fcdAppSetParam(FCD_CMD_APP_SET_IQ_CORR, iqinfo.auc, 4);
-    if (fme != FCD_MODE_APP)
-    {
-        /** FIUXME: error message **/
-    }
 }

@@ -27,7 +27,7 @@
 #include <gr_simple_squelch_cc.h>
 
 #include "receiver.h"
-#include "dsp/rx_source_fcd.h"
+#include "dsp/rx_source_osmosdr.h"
 #include "dsp/correct_iq_cc.h"
 #include "dsp/rx_filter.h"
 #include "dsp/rx_meter.h"
@@ -56,7 +56,7 @@ receiver::receiver(const std::string input_device, const std::string audio_devic
 {
     tb = gr_make_top_block("gqrx");
 
-    src = make_rx_source_fcd(input_device);
+    src = make_rx_source_osmosdr(input_device);
     //src->set_freq(d_rf_freq);
 
     dc_corr = make_dc_corr_cc(0.01f);
@@ -290,7 +290,7 @@ receiver::status receiver::set_filter_shape(filter_shape shape)
 
 receiver::status receiver::set_freq_corr(int ppm)
 {
-    src->set_freq_corr(ppm);
+    /** DELETEME */
 
     return STATUS_OK;
 }
@@ -298,14 +298,14 @@ receiver::status receiver::set_freq_corr(int ppm)
 
 receiver::status receiver::set_dc_corr(double dci, double dcq)
 {
-    src->set_dc_corr(dci, dcq);
+    /** DELETEME */
 
     return STATUS_OK;
 }
 
 receiver::status receiver::set_iq_corr(double gain, double phase)
 {
-    src->set_iq_corr(gain, phase);
+    /** DELETEME */
 
     return STATUS_OK;
 }

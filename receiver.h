@@ -34,7 +34,7 @@
 #include <gr_freq_xlating_fir_filter_ccc.h>
 #include <gr_freq_xlating_fir_filter_ccf.h>
 #include "dsp/correct_iq_cc.h"
-#include "dsp/rx_source_fcd.h"
+#include "dsp/rx_source_osmosdr.h"
 #include "dsp/rx_noise_blanker_cc.h"
 #include "dsp/rx_filter.h"
 #include "dsp/rx_meter.h"
