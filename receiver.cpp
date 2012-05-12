@@ -63,7 +63,7 @@ receiver::receiver(const std::string input_device, const std::string audio_devic
     iq_fft = make_rx_fft_c(4096, 0);
 
     /** TODO replace fixed internal bandwidth with variable one */
-    const std::vector<float> taps = gr_firdes::low_pass(1, d_bandwidth, 40000, 10000, gr_firdes::WIN_HAMMING, 6.76);
+    const std::vector<float> taps = gr_firdes::low_pass(1, d_bandwidth, 40000, 15000, gr_firdes::WIN_HAMMING, 6.76);
     std::cerr << "xlating filter taps: " << taps.size() << std::endl;
     xlate = gr_make_freq_xlating_fir_filter_ccf(d_bandwidth/d_bandwidth_int, taps, -d_filter_offset, d_bandwidth);
 
