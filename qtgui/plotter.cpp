@@ -225,6 +225,7 @@ void CPlotter::mouseMoveEvent(QMouseEvent* event)
             {
                 m_DemodLowCutFreq = FreqfromX(pt.x()-m_GrabPosition ) - m_DemodCenterFreq;
                 m_DemodLowCutFreq = RoundFreq(m_DemodLowCutFreq, m_FilterClickResolution);
+                ClampDemodParameters();
 
                 if (m_symetric && (event->buttons() & Qt::LeftButton))  // symetric adjustment
                 {
@@ -256,6 +257,7 @@ void CPlotter::mouseMoveEvent(QMouseEvent* event)
             {
                 m_DemodHiCutFreq = FreqfromX( pt.x()-m_GrabPosition ) - m_DemodCenterFreq;
                 m_DemodHiCutFreq = RoundFreq(m_DemodHiCutFreq, m_FilterClickResolution);
+                ClampDemodParameters();
 
                 if (m_symetric && (event->buttons() & Qt::LeftButton)) // symetric adjustment
                 {
