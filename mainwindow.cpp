@@ -1,6 +1,6 @@
 /* -*- c++ -*- */
 /*
- * Copyright 2011 Alexandru Csete OZ9AEC.
+ * Copyright 2011-2012 Alexandru Csete OZ9AEC.
  *
  * Gqrx is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,6 +18,7 @@
  * Boston, MA 02110-1301, USA.
  */
 #include <QSettings>
+#include <QByteArray>
 #include <QDateTime>
 #include <QDesktopServices>
 #include <QDebug>
@@ -31,7 +32,7 @@
 #include "receiver.h"
 
 
-MainWindow::MainWindow(QWidget *parent) :
+MainWindow::MainWindow(const QString cfgfile, QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow),
     d_lnb_lo(0),
@@ -39,6 +40,13 @@ MainWindow::MainWindow(QWidget *parent) :
     dec_afsk1200(0)
 {
     ui->setupUi(this);
+
+    /* Initialise default configuration directory */
+    QByteArray xdg_dir = qgetenv("XDG_CONFIG_HOME");
+    if (xdg_dir.isEmpty())
+        m_cfg_dir = QString("%1/.config/gqrx").arg(QDir::homePath()); // Qt takes care of conversion to native separators
+    else
+        m_cfg_dir = QString("%1/gqrx").arg(xdg_dir.data());
 
     setWindowTitle(QString("gqrx %1 (OsmoSDR)").arg(VERSION));
 
@@ -49,8 +57,6 @@ MainWindow::MainWindow(QWidget *parent) :
     d_filter_shape = receiver::FILTER_SHAPE_NORMAL;
 
     /* create receiver object */
-    QSettings settings;
-
     QString indev = CIoConfig::getFcdDeviceName();
     //QString outdev = settings.value("output").toString();
 
@@ -147,6 +153,9 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(uiDockFft, SIGNAL(fftSizeChanged(int)), this, SLOT(setIqFftSize(int)));
     connect(uiDockFft, SIGNAL(fftRateChanged(int)), this, SLOT(setIqFftRate(int)));
     connect(uiDockFft, SIGNAL(fftSplitChanged(int)), this, SLOT(setIqFftSplit(int)));
+
+    // restore last session
+    loadConfig(cfgfile);
 }
 
 MainWindow::~MainWindow()
@@ -164,6 +173,37 @@ MainWindow::~MainWindow()
     audio_fft_timer->stop();
     delete audio_fft_timer;
 
+    if (m_settings)
+    {
+        m_settings->setValue("configversion", 2);
+
+        // save session
+        m_settings->setValue("input/frequency", ui->freqCtrl->GetFrequency());
+        if (d_lnb_lo)
+            m_settings->setValue("input/lnb_lo", d_lnb_lo);
+        else
+            m_settings->remove("input/lnb_lo");
+
+        double dblval = uiDockFcdCtl->lnaGain();
+        m_settings->setValue("input/gain", dblval);
+        m_settings->setValue("input/corr_freq", uiDockFcdCtl->freqCorr());
+
+        dblval = uiDockFcdCtl->iqGain();
+        if (dblval < 1.0)
+            m_settings->setValue("input/corr_iq_gain", dblval);
+        else
+            m_settings->remove("input/corr_iq_gain");
+
+        dblval = uiDockFcdCtl->iqPhase();
+        if (dblval != 0.0)
+            m_settings->setValue("input/corr_iq_phase", dblval);
+        else
+            m_settings->remove("input/corr_iq_phase");
+
+        m_settings->sync();
+        delete m_settings;
+    }
+
     delete ui;
     delete uiDockRxOpt;
     delete uiDockAudio;
@@ -173,6 +213,87 @@ MainWindow::~MainWindow()
     delete rx;
     delete [] d_fftData;
     delete [] d_realFftData;
+}
+
+/*! \brief Load new configuration.
+ *  \param cfgfile
+ *  \returns Always true.
+ *
+ * If cfgfile is an absolute path it will be used as is, otherwise it is assumed to be the
+ * name of a file under m_cfg_dir.
+ *
+ * If cfgfile does not exist it will be created.
+ */
+bool MainWindow::loadConfig(const QString cfgfile)
+{
+    qDebug() << "Loading configuration from:" << cfgfile;
+
+    if (m_settings)
+        delete m_settings;
+
+    if (QDir::isAbsolutePath(cfgfile))
+        m_settings = new QSettings(cfgfile, QSettings::IniFormat);
+    else
+        m_settings = new QSettings(QString("%1/%2").arg(m_cfg_dir).arg(cfgfile), QSettings::IniFormat);
+
+    qDebug() << "Configuration file:" << m_settings->fileName();
+
+    emit configChanged(m_settings);
+
+    // manual reconf (FIXME: check status)
+    bool cok = false;
+
+    uiDockFcdCtl->setFreqCorr(m_settings->value("input/corr_freq", -115).toInt(&cok));
+
+    d_lnb_lo = m_settings->value("input/lnb_lo", 0).toLongLong(&cok);
+    uiDockFcdCtl->setLnbLo((double)d_lnb_lo/1.0e6);
+    ui->freqCtrl->SetFrequency(m_settings->value("input/frequency", 144500000).toLongLong(&cok));
+
+    uiDockFcdCtl->setLnaGain(m_settings->value("input/gain", 20).toFloat(&cok));
+    setRfGain(m_settings->value("input/gain", 20).toFloat(&cok));
+    uiDockFcdCtl->setIqGain(m_settings->value("input/corr_iq_gain", 1.0).toDouble(&cok));
+    uiDockFcdCtl->setIqPhase(m_settings->value("input/corr_iq_phase", 0.0).toDouble(&cok));
+
+    return true;
+}
+
+/*! \brief Save current configuration to a file.
+ *  \param cfgfile
+ *  \returns True if the operation was successful.
+ *
+ * If cfgfile is an absolute path it will be used as is, otherwise it is assumed to be the
+ * name of a file under m_cfg_dir.
+ *
+ * If cfgfile already exists it will be overwritten (we assume that a file selection dialog
+ * has already asked for confirmation of overwrite.
+ *
+ * Since QSettings does not support "save as" we do this by copying the current
+ * settings to a new file.
+ */
+bool MainWindow::saveConfig(const QString cfgfile)
+{
+    QString oldfile = m_settings->fileName();
+    QString newfile;
+
+    qDebug() << "Saving configuration to:" << cfgfile;
+
+    m_settings->sync();
+
+    if (QDir::isAbsolutePath(cfgfile))
+        newfile = cfgfile;
+    else
+        newfile = QString("%1/%2").arg(m_cfg_dir).arg(cfgfile);
+
+    if (QFile::copy(oldfile, newfile))
+    {
+        loadConfig(cfgfile);
+        return true;
+    }
+    else
+    {
+        qDebug() << "Error saving configuration to" << newfile;
+        return false;
+    }
 }
 
 
@@ -843,6 +964,55 @@ void MainWindow::on_actionDSP_triggered(bool checked)
     }
 }
 
+/*! \brief Load configuration activated by user. */
+void MainWindow::on_actionLoadSettings_triggered()
+{
+    QString cfgfile = QFileDialog::getOpenFileName(this,
+                                                   tr("Load settings"),
+                                                   m_last_dir.isEmpty() ? m_cfg_dir : m_last_dir,
+                                                   tr("Settings (*.conf)"));
+
+    qDebug() << "File to open:" << cfgfile;
+
+    if (cfgfile.isEmpty())
+        return;
+
+    if (!cfgfile.endsWith(".conf", Qt::CaseSensitive))
+            cfgfile.append(".conf");
+
+    loadConfig(cfgfile);
+
+    // store last dir
+    QFileInfo fi(cfgfile);
+    if (m_cfg_dir != fi.absolutePath())
+        m_last_dir = fi.absolutePath();
+}
+
+/*! \brief Save configuration activated by user. */
+void MainWindow::on_actionSaveSettings_triggered()
+{
+    QString cfgfile = QFileDialog::getSaveFileName(this,
+                                                   tr("Save settings"),
+                                                   m_last_dir.isEmpty() ? m_cfg_dir : m_last_dir,
+                                                   tr("Settings (*.conf)"));
+
+    qDebug() << "File to save:" << cfgfile;
+
+    if (cfgfile.isEmpty())
+        return;
+
+    if (!cfgfile.endsWith(".conf", Qt::CaseSensitive))
+            cfgfile.append(".conf");
+
+    saveConfig(cfgfile);
+
+    // store last dir
+    QFileInfo fi(cfgfile);
+    if (m_cfg_dir != fi.absolutePath())
+        m_last_dir = fi.absolutePath();
+}
+
+
 /*! \brief Toggle I/Q recording. */
 void MainWindow::on_actionIqRec_triggered(bool checked)
 {
@@ -1102,7 +1272,7 @@ void MainWindow::on_actionAbout_triggered()
 {
     QMessageBox::about(this, tr("About Gqrx"),
                        tr("<p>This is Gqrx %1</p>"
-                          "<p><b>This is a beta release.</b></p>"
+                          /*"<p><b>This is a beta release.</b></p>"*/
                           "<p>Gqrx is a software defined radio receiver for the Funcube Dongle.</p>"
                           "<p>Gqrx is powered by GNU Radio and the Qt toolkit (see About Qt) and is "
                           "currently available for Linux. You can download the latest version from the "
@@ -1113,7 +1283,7 @@ void MainWindow::on_actionAbout_triggered()
                           "<p>"
                           "<a href='http://www.gnuradio.org/'>GNU Radio website</a><br/>"
                           "<a href='http://funcubedongle.com/'>Funcube Dongle website</a><br/>"
-                          "<a href='http://www.ettus.com/'>Ettus Research (USRP)</a><br/>"
+                          /*"<a href='http://www.ettus.com/'>Ettus Research (USRP)</a><br/>"*/
                           "</p>"
                           "<p>"
                           "Gqrx license: <a href='http://www.gnu.org/licenses/gpl.html'>GNU GPL</a>."

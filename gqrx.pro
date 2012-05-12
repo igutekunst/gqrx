@@ -9,6 +9,8 @@ QT       += core gui
 TARGET = gqrx
 TEMPLATE = app
 
+CONFIG += debug
+
 # disable debug messages in release
 CONFIG(debug, debug|release) {
     # Use for valgrind
@@ -23,7 +25,7 @@ CONFIG(debug, debug|release) {
 
     # Release binaries with gr bundled
     # QMAKE_RPATH & co won't work with origin
-    QMAKE_LFLAGS += '-Wl,-rpath,\'\$$ORIGIN/lib\''
+    ## QMAKE_LFLAGS += '-Wl,-rpath,\'\$$ORIGIN/lib\''
 }
 
 # Tip from: http://www.qtcentre.org/wiki/index.php?title=Version_numbering_using_QMake

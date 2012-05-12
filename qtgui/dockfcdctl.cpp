@@ -1,6 +1,6 @@
 /* -*- c++ -*- */
 /*
- * Copyright 2011 Alexandru Csete OZ9AEC.
+ * Copyright 2011-2012 Alexandru Csete OZ9AEC.
  *
  * Gqrx is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -31,6 +31,17 @@ DockFcdCtl::DockFcdCtl(QWidget *parent) :
 DockFcdCtl::~DockFcdCtl()
 {
     delete ui;
+}
+
+
+void DockFcdCtl::setLnbLo(double freq_mhz)
+{
+    ui->lnbSpinBox->setValue(freq_mhz);
+}
+
+double DockFcdCtl::lnbLo()
+{
+    return ui->lnbSpinBox->value();
 }
 
 
