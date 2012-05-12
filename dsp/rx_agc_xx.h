@@ -50,7 +50,7 @@ typedef boost::shared_ptr<rx_agc_cc> rx_agc_cc_sptr;
  * To avoid accidental use of raw pointers, the rx_agc_cc constructor is private.
  * make_rx_agc_cc is the public interface for creating new instances.
  */
-rx_agc_cc_sptr make_rx_agc_cc(double sample_rate = 1920000.0, bool agc_on = true,
+rx_agc_cc_sptr make_rx_agc_cc(double sample_rate, bool agc_on = true,
                               int threshold = -100, int manual_gain = 0,
                               int slope = 2, int decay = 100,
                               bool use_hang = false);
