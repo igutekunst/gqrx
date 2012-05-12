@@ -1,5 +1,6 @@
 Gqrx is an experimental AM, FM and SSB software defined receiver implemented using GNU Radio and the Qt GUI toolkit. Currently it works on Linux. While the original version uses the Funcube Dongle as input source, this version is a first stab at RTL2832U (RTL-SDR) support.
 
+Superkuh kindly provides an Ubuntu binary at: http://superkuh.com/gnuradio.html#gqrx_qtstuff
 
 1. Installation
 
