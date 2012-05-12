@@ -1,6 +1,8 @@
 /* -*- c++ -*- */
 /*
  * Copyright 2011-2012 Alexandru Csete OZ9AEC.
+ * Copyright 2012 Pascal Hirsch
+ * Copyright 2012 Mathis Schmieder <mathis.schmieder@gmail.com>
  *
  * Gqrx is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -36,12 +38,12 @@ DockFcdCtl::~DockFcdCtl()
 
 void DockFcdCtl::setLnbLo(double freq_mhz)
 {
-    ui->lnbSpinBox->setValue(freq_mhz);
+    //ui->lnbSpinBox->setValue(freq_mhz);
 }
 
 double DockFcdCtl::lnbLo()
 {
-    return ui->lnbSpinBox->value();
+    //return ui->lnbSpinBox->value();
 }
 
 
@@ -211,5 +213,22 @@ void DockFcdCtl::on_iqGainSpinBox_valueChanged(double value)
 void DockFcdCtl::on_iqPhaseSpinBox_valueChanged(double value)
 {
     emit iqCorrChanged(ui->iqGainSpinBox->value(), value);
+}
+
+void DockFcdCtl::on_lnaAutoGain_stateChanged(int state)
+{
+    if (state == 2)
+    {
+        ui->lnaComboBox->setEnabled(0);
+        emit lnaAutoGainChanged(1);
+    }
+    else if (state == 0)
+    {
+        float gain;
+        gain = DockFcdCtl::lnaGain();
+        ui->lnaComboBox->setEnabled(1);
+        emit lnaAutoGainChanged(0);
+        emit lnaGainChanged(gain);
+    }
 }
 

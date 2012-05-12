@@ -1,6 +1,8 @@
 /* -*- c++ -*- */
 /*
  * Copyright 2011-2012 Alexandru Csete OZ9AEC.
+ * Copyright 2012 Pascal Hirsch
+ * Copyright 2012 Mathis Schmieder <mathis.schmieder@gmail.com>
  *
  * Gqrx is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -54,6 +56,7 @@ signals:
     void freqCorrChanged(int value);
     void lnbLoChanged(double freq_mhz);
     void iqCorrChanged(double gain, double phase);
+    void lnaAutoGainChanged(int gain_mode);
 
 private slots:
     void on_lnbSpinBox_valueChanged(double value);
@@ -61,6 +64,7 @@ private slots:
     void on_freqCorrSpinBox_valueChanged(int value);
     void on_iqGainSpinBox_valueChanged(double value);
     void on_iqPhaseSpinBox_valueChanged(double value);
+    void on_lnaAutoGain_stateChanged(int state);
 
 private:
     Ui::DockFcdCtl *ui;

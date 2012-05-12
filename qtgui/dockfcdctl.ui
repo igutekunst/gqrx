@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>179</width>
-    <height>237</height>
+    <width>183</width>
+    <height>266</height>
    </rect>
   </property>
   <property name="floating">
@@ -17,7 +17,7 @@
    <set>Qt::LeftDockWidgetArea|Qt::RightDockWidgetArea</set>
   </property>
   <property name="windowTitle">
-   <string>FCD Controls</string>
+   <string>OsmoSDR Controls</string>
   </property>
   <widget class="QWidget" name="dockWidgetContents">
    <layout class="QVBoxLayout" name="verticalLayout">
@@ -28,42 +28,34 @@
      <number>5</number>
     </property>
     <item>
-     <layout class="QHBoxLayout" name="horizontalLayout_3">
+     <layout class="QHBoxLayout" name="horizontalLayout_4">
+      <property name="leftMargin">
+       <number>0</number>
+      </property>
       <item>
-       <widget class="QLabel" name="lnbLabel">
+       <widget class="QLabel" name="srLable">
         <property name="text">
-         <string>LO</string>
+         <string>Sample Rate</string>
         </property>
        </widget>
       </item>
       <item>
-       <widget class="QDoubleSpinBox" name="lnbSpinBox">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="toolTip">
-         <string>Local oscillator of up or down converter</string>
-        </property>
-        <property name="statusTip">
-         <string/>
-        </property>
-        <property name="alignment">
-         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-        </property>
-        <property name="suffix">
-         <string> MHz</string>
-        </property>
-        <property name="decimals">
-         <number>3</number>
-        </property>
-        <property name="minimum">
-         <double>-2000.000000000000000</double>
-        </property>
-        <property name="maximum">
-         <double>7900.000000000000000</double>
+       <widget class="QComboBox" name="samplerate">
+        <item>
+         <property name="text">
+          <string>1920000</string>
+         </property>
+        </item>
+       </widget>
+      </item>
+     </layout>
+    </item>
+    <item>
+     <layout class="QHBoxLayout" name="horizontalLayout_3">
+      <item>
+       <widget class="QCheckBox" name="lnaAutoGain">
+        <property name="text">
+         <string>Automatic Gain Control</string>
         </property>
        </widget>
       </item>
@@ -80,6 +72,9 @@
       </item>
       <item>
        <widget class="QComboBox" name="lnaComboBox">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
         <property name="currentIndex">
          <number>0</number>
         </property>

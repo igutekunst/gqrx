@@ -69,6 +69,7 @@ public:
     virtual double get_gain() = 0;
     virtual double get_gain_min() = 0;
     virtual double get_gain_max() = 0;
+    virtual void set_gain_mode(int gain_mode) = 0;
 
     virtual void set_sample_rate(double sps) = 0;
     virtual double get_sample_rate() = 0;

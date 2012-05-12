@@ -1,6 +1,7 @@
 /* -*- c++ -*- */
 /*
  * Copyright 2011-2012 Alexandru Csete OZ9AEC.
+ * Copyright 2012 Mathis Schmieder <mathis.schmieder@gmail.com>
  *
  * Gqrx is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -97,6 +98,7 @@ private slots:
     /* baseband receiver */
     void setFilterOffset(qint64 freq_hz);
     void setRfGain(float gain);
+    void setRfGainMode(int gain_mode);
     void setFreqCorr(int ppm);
     void setDcCorr(double dci, double dcq);
     void setIqCorr(double gain, double phase);

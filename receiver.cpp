@@ -214,10 +214,21 @@ receiver::status receiver::set_rf_sample_rate(double d_sample_rate)
 receiver::status receiver::set_rf_gain(float gain_db)
 {
     src->set_gain(gain_db);
-
-    return STATUS_OK;
+    if (src->get_gain() == gain_db)
+        return STATUS_OK;
+    else
+        return STATUS_ERROR;
 }
 
+/*! \brief Set RF auto gain mode.
+ *  \param gain_mode 1 for auto gain, 0 for manual gain.
+ *  \return RX_STATUS_ERROR if an error occurs.
+ */
+receiver::status receiver::set_rf_gain_mode(int gain_mode)
+{
+    src->set_gain_mode(gain_mode);
+    return STATUS_OK;
+}
 
 /*! \brief Set filter offset.
  *  \param offset_hz The desired filter offset in Hz.

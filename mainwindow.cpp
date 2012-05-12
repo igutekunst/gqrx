@@ -1,6 +1,7 @@
 /* -*- c++ -*- */
 /*
  * Copyright 2011-2012 Alexandru Csete OZ9AEC.
+ * Copyright 2012 Mathis Schmieder <mathis.schmieder@gmail.com>
  *
  * Gqrx is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -130,6 +131,7 @@ MainWindow::MainWindow(const QString cfgfile, QWidget *parent) :
     connect(ui->freqCtrl, SIGNAL(NewFrequency(qint64)), this, SLOT(setNewFrequency(qint64)));
     connect(uiDockFcdCtl, SIGNAL(lnbLoChanged(double)), this, SLOT(setLnbLo(double)));
     connect(uiDockFcdCtl, SIGNAL(lnaGainChanged(float)), SLOT(setRfGain(float)));
+    connect(uiDockFcdCtl, SIGNAL(lnaAutoGainChanged(int)), this, SLOT(setRfGainMode(int)));
     connect(uiDockFcdCtl, SIGNAL(freqCorrChanged(int)), this, SLOT(setFreqCorr(int)));
     connect(uiDockFcdCtl, SIGNAL(iqCorrChanged(double,double)), this, SLOT(setIqCorr(double,double)));
     connect(uiDockRxOpt, SIGNAL(filterOffsetChanged(qint64)), this, SLOT(setFilterOffset(qint64)));
@@ -347,6 +349,14 @@ void MainWindow::setFilterOffset(qint64 freq_hz)
 void MainWindow::setRfGain(float gain)
 {
     rx->set_rf_gain(gain);
+}
+
+/*! \brief Set RF gain mode.
+ *  \param gain_mode Automatic or manual gain..
+ */
+void MainWindow::setRfGainMode(int gain_mode)
+{
+    rx->set_rf_gain_mode(gain_mode);
 }
 
 /*! \brief Set new frequency offset value.

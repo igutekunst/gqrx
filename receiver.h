@@ -102,6 +102,7 @@ public:
     status set_rf_sample_rate(double d_sample_rate);
 
     status set_rf_gain(float gain_db);
+    status set_rf_gain_mode(int gain_mode);
 
 
     status set_filter_offset(double offset_hz);

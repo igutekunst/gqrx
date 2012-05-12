@@ -104,6 +104,11 @@ double rx_source_osmosdr::get_gain()
     return d_osmosdr_src->get_gain();
 }
 
+void rx_source_osmosdr::set_gain_mode(int gain_mode)
+{
+    d_osmosdr_src->set_gain_mode(gain_mode);
+}
+
 double rx_source_osmosdr::get_gain_min()
 {
     return d_osmosdr_src->get_gain_range().begin()->start();

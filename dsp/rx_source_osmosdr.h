@@ -63,6 +63,7 @@ public:
     double get_gain();
     double get_gain_min();
     double get_gain_max();
+    void set_gain_mode(int gain_mode);
 
     void set_sample_rate(double sps);
     double get_sample_rate();
