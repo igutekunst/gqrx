@@ -52,32 +52,34 @@ void DockFcdCtl::setLnaGain(float gain)
 {
     int index = -1;
 
-    if (gain > 27.5)
+    if (gain > 30.5)
         index = 0;
-    else if (gain > 22.5)
+    else if (gain > 27.5)
         index = 1;
-    else if (gain > 18.5)
+    else if (gain > 22.5)
         index = 2;
-    else if (gain > 16.5)
+    else if (gain > 18.5)
         index = 3;
-    else if (gain > 13.5)
+    else if (gain > 16.5)
         index = 4;
-    else if (gain > 11.5)
+    else if (gain > 13.5)
         index = 5;
-    else if (gain > 8.5)
+    else if (gain > 11.5)
         index = 6;
-    else if (gain > 6.5)
+    else if (gain > 8.5)
         index = 7;
-    else if (gain > 3.5)
+    else if (gain > 6.5)
         index = 8;
-    else if (gain > 1.5)
+    else if (gain > 3.5)
         index = 9;
-    else if (gain > -1.5)
+    else if (gain > 1.5)
         index = 10;
-    else if (gain > -3.5)
+    else if (gain > -0.5)
         index = 11;
-    else
+    else if (gain > -3.5)
         index = 12;
+    else
+        index = 13;
 
     ui->lnaComboBox->setCurrentIndex(index);
 }

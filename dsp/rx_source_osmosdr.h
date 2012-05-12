@@ -68,6 +68,8 @@ public:
     double get_sample_rate();
     std::vector<double> get_sample_rates();
 
+    void set_freq_corr(int ppm);
+
 private:
     osmosdr_source_c_sptr    d_osmosdr_src;     /*! OsmoSDR source. */
     std::vector<double>      d_sample_rates;  /*! Supported sample rates. */

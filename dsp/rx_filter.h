@@ -68,7 +68,7 @@ class rx_filter : public gr_hier_block2
 {
 
 public:
-    rx_filter(double sample_rate=96000.0, double center=0.0, double low=-5000.0, double high=5000.0, double trans_width=1000.0); // FIXME: should be private
+    rx_filter(double sample_rate, double center=0.0, double low=-5000.0, double high=5000.0, double trans_width=1000.0); // FIXME: should be private
     ~rx_filter();
 
     void set_offset(double center);

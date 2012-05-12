@@ -46,6 +46,8 @@ rx_source_osmosdr::rx_source_osmosdr(const std::string device_name)
     // setting initial frequency and sample rate
     set_freq(d_freq);
     set_sample_rate(d_sample_rate);
+    d_osmosdr_src->set_gain_mode(false); // manual gain
+    set_gain(d_gain);
 }
 
 
@@ -80,22 +82,20 @@ double rx_source_osmosdr::get_freq()
 
 double rx_source_osmosdr::get_freq_min()
 {
-    return 50.0e6;
+    return d_osmosdr_src->get_freq_range()[0].start();
 }
 
 double rx_source_osmosdr::get_freq_max()
 {
-    return 2.0e9;
+    return d_osmosdr_src->get_freq_range()[0].stop();
 }
 
 void rx_source_osmosdr::set_gain(double gain)
 {
-    unsigned char g;
-
     if ((gain >= get_gain_min()) && (gain <= get_gain_max()))
     {
-        std::cout << "set_gain called" << std::endl;
-	// TODO set auto gain / set manual gain
+        d_gain = gain;
+        d_osmosdr_src->set_gain(gain);
     }
 }
 
@@ -106,12 +106,12 @@ double rx_source_osmosdr::get_gain()
 
 double rx_source_osmosdr::get_gain_min()
 {
-    return -5.0;
+    return d_osmosdr_src->get_gain_range().begin()->start();
 }
 
 double rx_source_osmosdr::get_gain_max()
 {
-    return 30.0;
+    return d_osmosdr_src->get_gain_range().rbegin()->stop();
 }
 
 void rx_source_osmosdr::set_sample_rate(double sps)
@@ -127,4 +127,10 @@ double rx_source_osmosdr::get_sample_rate()
 std::vector<double> rx_source_osmosdr::get_sample_rates()
 {
     return d_sample_rates;
+}
+
+void rx_source_osmosdr::set_freq_corr(int ppm)
+{
+    d_osmosdr_src->set_freq_corr(ppm);
+    set_freq(d_freq);
 }

@@ -106,8 +106,8 @@ MainWindow::MainWindow(const QString cfgfile, QWidget *parent) :
     //addDockWidget(Qt::BottomDockWidgetArea, uiDockIqPlay);
 
     /* hide docks that we don't want to show initially */
-    uiDockFcdCtl->hide();
-    uiDockFft->hide();
+    //uiDockFcdCtl->hide();
+    //uiDockFft->hide();
     //uiDockIqPlay->hide();
 
     /* misc configurations */

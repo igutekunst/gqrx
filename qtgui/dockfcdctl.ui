@@ -81,8 +81,13 @@
       <item>
        <widget class="QComboBox" name="lnaComboBox">
         <property name="currentIndex">
-         <number>2</number>
+         <number>0</number>
         </property>
+        <item>
+         <property name="text">
+          <string>+49.0 dB</string>
+         </property>
+        </item>
         <item>
          <property name="text">
           <string>+30.0 dB</string>
@@ -136,6 +141,11 @@
         <item>
          <property name="text">
           <string>+0.0 dB</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>-1.0 dB</string>
          </property>
         </item>
         <item>
