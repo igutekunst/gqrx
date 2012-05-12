@@ -109,7 +109,7 @@ void DockAudio::on_audioRecButton_clicked(bool checked)
 {
     if (checked) {
         // FIXME: option to use local time
-        lastAudio = QDateTime::currentDateTimeUtc().toString("gqrx-yyyyMMdd-hhmmss.'wav'");
+        lastAudio = QDateTime::currentDateTime().toUTC().toString("gqrx-yyyyMMdd-hhmmss.'wav'");
 
         // emit signal and start timer
         emit audioRecStarted(lastAudio);
