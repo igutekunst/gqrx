@@ -61,7 +61,7 @@ MainWindow::MainWindow(const QString cfgfile, QWidget *parent) :
     QString indev = CIoConfig::getFcdDeviceName();
     //QString outdev = settings.value("output").toString();
 
-    rx = new receiver(indev.toStdString(), "");
+    rx = new receiver(indev.toStdString(), "pulse");
     rx->set_rf_freq(144500000.0f);
     rx->set_rf_sample_rate(1920000.0); // TODO variable
     ui->plotter->setSampleRate(1920000);
